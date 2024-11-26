@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: api-gateway
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/v1/users/**
+          filters:
+            - RewritePath=/api/v1/users/(?<segment>.*), /api/v1/users/${segment}
+
+        - id: post-service
+          uri: lb://post-service
+          predicates:
+            - Path=/api/v1/posts/**
+          filters:
+            - RewritePath=/api/v1/posts/(?<segment>.*), /api/v1/post/${segment}
+
+        - id: event-service
+          uri: lb://reservation-service
+          predicates:
+            - Path=/api/v1/event/**, /api/v1/matching/**, /api/v1/reservation/**
+          filters:
+            - RewritePath=/api/v1/events/(?<segment>.*), /api/v1/event/${segment}
+            - RewritePath=/api/v1/matching/(?<segment>.*), /api/v1/matching/${segment}
+            - RewritePath=/api/v1/reservations/(?<segment>.*), /api/v1/reservation/${segment}
+
+        - id: recruitment-service
+          uri: lb://recruitment-service
+          predicates:
+            - Path=/api/v1/recruitments/**, /api/v1/applications/**
+          filters:
+            - RewritePath=/api/v1/recruitments/(?<segment>.*), /api/v1/recruitments/${segment}
+            - RewritePath=/api/v1/applications/(?<segment>.*), /api/v1/applications/${segment}
+        - id: team-service
+          uri: lb://team-service
+          predicates:
+            - Path=/api/v1/teams/**
+          filters:
+            - RewritePath=/api/v1/teams/(?<segment>.*), /api/v1/teams/${segment}
+
+
+
+jwt:
+  secret:
+    key: 7Iqk7YyM66W07YOA7L2U65Sp7YG065+9U3ByaW5n6rCV7J2Y7Yqc7YSw7LWc7JuQ67mI7J6F64uI64ukLg==
+
+server:
+  port: 8080
